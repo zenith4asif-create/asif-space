@@ -1,0 +1,6 @@
+{
+  "name": "Space Tourism",
+  "description": "Explore the cosmos with an interactive space tourism website featuring destinations, crew members, and spacecraft technology with sleek modern UI.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
