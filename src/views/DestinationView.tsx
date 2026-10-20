@@ -1,18 +1,20 @@
 import React, { useState } from 'react';
 import { spaceData, Destination } from '../data/spaceData';
 import { Planet3DVisualizer } from '../components/Planet3DVisualizer';
-import { Compass, Sparkles, Thermometer, Gauge, Clock, Navigation, Globe, Eye } from 'lucide-react';
+import { Compass, Sparkles, Thermometer, Gauge, Clock, Navigation, Globe, Eye, Orbit } from 'lucide-react';
 
 interface DestinationViewProps {
   currentDestId: string;
   onSelectDestination: (destId: string) => void;
   onOpenVideoSimulation?: () => void;
+  onOpenMoonDiscoveries?: () => void;
 }
 
 export const DestinationView: React.FC<DestinationViewProps> = ({
   currentDestId,
   onSelectDestination,
   onOpenVideoSimulation,
+  onOpenMoonDiscoveries,
 }) => {
   const [showExtendedData, setShowExtendedData] = useState(false);
 
@@ -36,29 +38,41 @@ export const DestinationView: React.FC<DestinationViewProps> = ({
   };
 
   return (
-    <div className="relative z-10 flex-1 flex flex-col justify-between px-6 md:px-16 lg:px-28 py-8 lg:py-12 max-w-7xl mx-auto w-full">
+    <div className="relative z-10 flex-1 flex flex-col justify-between px-4 sm:px-8 md:px-16 lg:px-28 py-6 md:py-10 lg:py-12 max-w-7xl mx-auto w-full">
       {/* Page Title: 01 PICK YOUR DESTINATION */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-8 md:mb-12">
-        <h2 className="font-barlow-condensed text-lg md:text-xl lg:text-2xl tracking-[0.25em] uppercase text-white text-center md:text-left">
-          <span className="font-bold text-white/30 mr-4">01</span>
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 mb-6 md:mb-10">
+        <h2 className="font-barlow-condensed text-base sm:text-lg md:text-xl lg:text-2xl tracking-[0.25em] uppercase text-white text-center md:text-left">
+          <span className="font-bold text-white/30 mr-3">01</span>
           Pick your destination
         </h2>
 
-        {/* Shortcut to Earth Orbit & Video Simulation */}
-        {onOpenVideoSimulation && (
-          <button
-            onClick={onOpenVideoSimulation}
-            className="flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-cyan-500/15 border border-cyan-400/40 text-xs font-barlow-condensed tracking-widest uppercase text-cyan-300 hover:bg-cyan-500/25 transition-all cursor-pointer shadow-[0_0_12px_rgba(34,211,238,0.25)]"
-          >
-            <Eye className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
-            <span>Launch Space Flight Simulation</span>
-          </button>
-        )}
+        {/* Action Shortcuts */}
+        <div className="flex items-center gap-2">
+          {activeDest.id === 'moon' && onOpenMoonDiscoveries && (
+            <button
+              onClick={onOpenMoonDiscoveries}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-500/20 border border-amber-400/50 text-xs font-barlow-condensed tracking-widest uppercase text-amber-300 hover:bg-amber-500/30 transition-all cursor-pointer shadow-[0_0_12px_rgba(251,191,36,0.3)]"
+            >
+              <Orbit className="w-3.5 h-3.5 text-amber-400" />
+              <span>ISRO Moon Discoveries</span>
+            </button>
+          )}
+
+          {onOpenVideoSimulation && (
+            <button
+              onClick={onOpenVideoSimulation}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-cyan-500/15 border border-cyan-400/40 text-xs font-barlow-condensed tracking-widest uppercase text-cyan-300 hover:bg-cyan-500/25 transition-all cursor-pointer shadow-[0_0_12px_rgba(34,211,238,0.25)]"
+            >
+              <Eye className="w-3.5 h-3.5 text-cyan-400 animate-pulse" />
+              <span>Flight Sim</span>
+            </button>
+          )}
+        </div>
       </div>
 
       {/* Main Grid: Left Rotatable 3D Planet, Right Content */}
-      <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-        {/* Left: 3D Rotatable Planet Visualizer */}
+      <div className="flex-1 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-14 items-center">
+        {/* Left: Live Animated Planet Visualizer (No spin rotation, pure live animation) */}
         <div className="lg:col-span-6 flex flex-col items-center justify-center">
           <Planet3DVisualizer
             planetName={activeDest.name}
@@ -71,7 +85,7 @@ export const DestinationView: React.FC<DestinationViewProps> = ({
           <div className="mt-4 flex items-center gap-3">
             <button
               onClick={() => setShowExtendedData(!showExtendedData)}
-              className="px-3 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-barlow-condensed tracking-widest uppercase text-[#d0d6f9] hover:text-white transition-all flex items-center gap-2 cursor-pointer"
+              className="px-3.5 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-xs font-barlow-condensed tracking-widest uppercase text-[#d0d6f9] hover:text-white transition-all flex items-center gap-2 cursor-pointer"
             >
               <Compass className="w-3.5 h-3.5 text-cyan-400" />
               <span>{showExtendedData ? 'Show Distance Specs' : 'Detailed Telemetry'}</span>
@@ -83,7 +97,7 @@ export const DestinationView: React.FC<DestinationViewProps> = ({
         <div className="lg:col-span-6 flex flex-col items-center lg:items-start text-center lg:text-left">
           {/* Destination Tabs (Moon, Mars, Europa, Titan) */}
           <div
-            className="flex items-center gap-6 md:gap-9 mb-8 border-b border-white/10 pb-2 w-full justify-center lg:justify-start"
+            className="flex items-center gap-5 sm:gap-7 md:gap-9 mb-6 md:mb-8 border-b border-white/10 pb-2 w-full justify-center lg:justify-start"
             role="tablist"
             aria-label="Destinations"
           >
@@ -95,7 +109,7 @@ export const DestinationView: React.FC<DestinationViewProps> = ({
                   onClick={() => onSelectDestination(dest.id)}
                   role="tab"
                   aria-selected={isActive}
-                  className={`relative pb-3 text-sm md:text-base font-barlow-condensed tracking-[0.2em] uppercase transition-colors duration-200 cursor-pointer ${
+                  className={`relative pb-3 text-xs sm:text-sm md:text-base font-barlow-condensed tracking-[0.2em] uppercase transition-colors duration-200 cursor-pointer ${
                     isActive ? 'text-white font-semibold' : 'text-[#d0d6f9] hover:text-white'
                   }`}
                 >
@@ -114,79 +128,79 @@ export const DestinationView: React.FC<DestinationViewProps> = ({
           </div>
 
           {/* Planet Name */}
-          <h3 className="font-bellefair text-6xl md:text-8xl text-white uppercase tracking-wider mb-4 leading-none">
+          <h3 className="font-bellefair text-5xl sm:text-7xl lg:text-8xl text-white uppercase tracking-wider mb-3 leading-none">
             {activeDest.name}
           </h3>
 
           {/* Planet Description */}
-          <p className="font-barlow text-[#d0d6f9] text-base md:text-lg leading-relaxed max-w-lg mb-8 font-light">
+          <p className="font-barlow text-[#d0d6f9] text-sm sm:text-base md:text-lg leading-relaxed max-w-lg mb-6 font-light">
             {activeDest.description}
           </p>
 
           {/* Fun fact highlight */}
           {activeDest.funFact && (
-            <div className="mb-8 p-4 rounded-xl bg-white/[0.03] border border-white/10 text-left max-w-lg">
-              <div className="flex items-center gap-2 mb-1.5 text-xs font-barlow-condensed tracking-widest uppercase text-cyan-300">
+            <div className="mb-6 p-4 rounded-xl bg-white/[0.03] border border-white/10 text-left max-w-lg">
+              <div className="flex items-center gap-2 mb-1 text-xs font-barlow-condensed tracking-widest uppercase text-cyan-300">
                 <Sparkles className="w-3.5 h-3.5" />
                 <span>Cosmic Fact</span>
               </div>
-              <p className="text-sm font-barlow text-slate-300">
+              <p className="text-xs sm:text-sm font-barlow text-slate-300">
                 {activeDest.funFact}
               </p>
             </div>
           )}
 
           {/* Divider Line */}
-          <div className="w-full h-[1px] bg-white/15 my-6" />
+          <div className="w-full h-[1px] bg-white/15 my-4 sm:my-6" />
 
           {/* Primary Stats: Distance & Travel Time */}
           {!showExtendedData ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 w-full max-w-lg pt-2">
+            <div className="grid grid-cols-2 gap-6 w-full max-w-lg pt-1 text-left sm:text-center lg:text-left">
               <div>
-                <p className="font-barlow-condensed text-xs uppercase tracking-[0.2em] text-[#d0d6f9] mb-2 flex items-center gap-1.5 justify-center lg:justify-start">
+                <p className="font-barlow-condensed text-[11px] sm:text-xs uppercase tracking-[0.2em] text-[#d0d6f9] mb-1 flex items-center gap-1.5 justify-start lg:justify-start">
                   <Navigation className="w-3 h-3 text-cyan-400" />
                   <span>Avg. Distance</span>
                 </p>
-                <p className="font-bellefair text-3xl text-white uppercase">
+                <p className="font-bellefair text-2xl sm:text-3xl text-white uppercase">
                   {activeDest.distance}
                 </p>
               </div>
               <div>
-                <p className="font-barlow-condensed text-xs uppercase tracking-[0.2em] text-[#d0d6f9] mb-2 flex items-center gap-1.5 justify-center lg:justify-start">
+                <p className="font-barlow-condensed text-[11px] sm:text-xs uppercase tracking-[0.2em] text-[#d0d6f9] mb-1 flex items-center gap-1.5 justify-start lg:justify-start">
                   <Clock className="w-3 h-3 text-cyan-400" />
                   <span>Est. Travel Time</span>
                 </p>
-                <p className="font-bellefair text-3xl text-white uppercase">
+                <p className="font-bellefair text-2xl sm:text-3xl text-white uppercase">
                   {activeDest.travel}
                 </p>
               </div>
             </div>
           ) : (
             /* Extended Telemetry Specs */
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 w-full max-w-lg pt-2">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 w-full max-w-lg pt-1 text-left">
               <div>
-                <p className="font-barlow-condensed text-xs uppercase tracking-[0.15em] text-[#d0d6f9] mb-1 flex items-center gap-1">
+                <p className="font-barlow-condensed text-[11px] uppercase tracking-[0.15em] text-[#d0d6f9] mb-0.5 flex items-center gap-1">
                   <Gauge className="w-3 h-3 text-cyan-400" />
                   <span>Gravity</span>
                 </p>
-                <p className="font-mono text-xl text-white font-semibold">
+                <p className="font-mono text-base sm:text-lg text-white font-semibold">
                   {activeDest.gravity}
                 </p>
               </div>
               <div>
-                <p className="font-barlow-condensed text-xs uppercase tracking-[0.15em] text-[#d0d6f9] mb-1 flex items-center gap-1">
+                <p className="font-barlow-condensed text-[11px] uppercase tracking-[0.15em] text-[#d0d6f9] mb-0.5 flex items-center gap-1">
                   <Thermometer className="w-3 h-3 text-amber-400" />
                   <span>Avg. Temp</span>
                 </p>
-                <p className="font-mono text-xl text-white font-semibold">
+                <p className="font-mono text-base sm:text-lg text-white font-semibold">
                   {activeDest.temperature}
                 </p>
               </div>
               <div>
-                <p className="font-barlow-condensed text-xs uppercase tracking-[0.15em] text-[#d0d6f9] mb-1">
+                <p className="font-barlow-condensed text-[11px] uppercase tracking-[0.15em] text-[#d0d6f9] mb-0.5">
                   <span>Orbital Period</span>
                 </p>
-                <p className="font-mono text-xl text-white font-semibold">
+                <p className="font-mono text-base sm:text-lg text-white font-semibold">
                   {activeDest.orbitalPeriod}
                 </p>
               </div>

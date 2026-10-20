@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { Navbar, MainTab } from './components/Navbar';
+import { MobileBottomNav, ExtendedTab } from './components/MobileBottomNav';
 import { Starfield } from './components/Starfield';
 import { HomeView } from './views/HomeView';
 import { DestinationView } from './views/DestinationView';
 import { CrewView } from './views/CrewView';
 import { TechnologyView } from './views/TechnologyView';
+import { IsroAndMoonDiscovery } from './components/IsroAndMoonDiscovery';
 import { SciFiWarpVideo } from './components/SciFiWarpVideo';
 import { spaceData } from './data/spaceData';
 import { FileJson, Orbit, Video, X, Sparkles, Heart } from 'lucide-react';
@@ -21,7 +23,9 @@ export default function App() {
   const syncFromUrl = () => {
     const path = window.location.pathname.toLowerCase();
 
-    if (path.includes('destination')) {
+    if (path.includes('isro') || path.includes('moon-discovery')) {
+      setCurrentTab('isro');
+    } else if (path.includes('destination')) {
       setCurrentTab('destination');
       if (path.includes('mars')) setDestId('mars');
       else if (path.includes('europa')) setDestId('europa');
@@ -61,6 +65,8 @@ export default function App() {
       const activeD = subItem || destId;
       setDestId(activeD);
       targetPath = `/destination-${activeD}.html`;
+    } else if (tab === 'isro') {
+      targetPath = '/isro-moon.html';
     } else if (tab === 'crew') {
       const activeC = subItem || crewSlug;
       setCrewSlug(activeC);
@@ -81,6 +87,8 @@ export default function App() {
     switch (currentTab) {
       case 'destination':
         return 'url(/assets/destination/background-destination-desktop.jpg)';
+      case 'isro':
+        return 'url(/assets/destination/background-destination-desktop.jpg)';
       case 'crew':
         return 'url(/assets/crew/background-crew-desktop.jpg)';
       case 'technology':
@@ -93,7 +101,7 @@ export default function App() {
 
   return (
     <div
-      className="relative min-h-screen w-full flex flex-col justify-between bg-cover bg-center bg-no-repeat transition-all duration-700 overflow-x-hidden selection:bg-cyan-500/30"
+      className="relative min-h-screen w-full flex flex-col justify-between bg-cover bg-center bg-no-repeat transition-all duration-700 overflow-x-hidden selection:bg-cyan-500/30 pb-16 md:pb-0"
       style={{
         backgroundImage: getBackgroundImage(),
         backgroundColor: '#0b0d17',
@@ -120,6 +128,7 @@ export default function App() {
             onSelectDestination={(dId) => navigateTo('destination', dId)}
             onOpenSimulation={() => setShowVideoSimModal(true)}
             onOpenGhibliCadets={() => navigateTo('crew')}
+            onOpenIsro={() => navigateTo('isro')}
           />
         )}
 
@@ -128,7 +137,12 @@ export default function App() {
             currentDestId={destId}
             onSelectDestination={(dId) => navigateTo('destination', dId)}
             onOpenVideoSimulation={() => setShowVideoSimModal(true)}
+            onOpenMoonDiscoveries={() => navigateTo('isro')}
           />
+        )}
+
+        {currentTab === 'isro' && (
+          <IsroAndMoonDiscovery />
         )}
 
         {currentTab === 'crew' && (
@@ -146,12 +160,12 @@ export default function App() {
         )}
       </main>
 
-      {/* Minimalist Bottom Footer with Direct File Inspector */}
-      <footer className="relative z-20 w-full py-4 px-6 md:px-14 border-t border-white/5 bg-[#0b0e17]/80 backdrop-blur-md">
+      {/* Minimalist Bottom Footer with Direct File Inspector (Desktop & Tablet) */}
+      <footer className="relative z-20 w-full py-4 px-4 sm:px-8 md:px-14 border-t border-white/5 bg-[#0b0e17]/80 backdrop-blur-md hidden sm:block">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3 text-xs font-barlow-condensed tracking-widest text-slate-400">
           <div className="flex items-center gap-2">
             <Orbit className="w-3.5 h-3.5 text-cyan-400" />
-            <span>SPACE TOURISM ARCHIVE · ALL FILES INTACT</span>
+            <span>SPACE TOURISM ARCHIVE · CHANDRAYAAN-3 & ISRO INCLUDED</span>
           </div>
 
           <div className="flex items-center gap-4">
@@ -196,26 +210,32 @@ export default function App() {
         </div>
       </footer>
 
+      {/* Thumb-friendly Mobile Bottom Navigation */}
+      <MobileBottomNav
+        currentTab={currentTab}
+        onNavigate={(tab) => navigateTo(tab as MainTab)}
+      />
+
       {/* Sci-Fi Space Flight Video & Warp Simulation Modal */}
       {showVideoSimModal && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 md:p-10 bg-black/85 backdrop-blur-md animate-in fade-in"
+          className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-6 md:p-10 bg-black/90 backdrop-blur-md animate-in fade-in"
           onClick={() => setShowVideoSimModal(false)}
         >
           <div
-            className="w-full max-w-5xl bg-[#070a13] border border-cyan-400/30 rounded-3xl p-4 sm:p-6 flex flex-col shadow-[0_0_80px_rgba(34,211,238,0.2)]"
+            className="w-full max-w-5xl bg-[#070a13] border border-cyan-400/30 rounded-2xl sm:rounded-3xl p-3 sm:p-6 flex flex-col shadow-[0_0_80px_rgba(34,211,238,0.2)] max-h-[95vh] overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between pb-4 border-b border-white/10 mb-4">
-              <div className="flex items-center gap-3">
-                <Video className="w-5 h-5 text-cyan-400 animate-pulse" />
-                <h3 className="font-barlow-condensed text-lg uppercase tracking-wider text-white">
-                  Sci-Fi Space Flight Video & Hyperspace Warp Simulation
+            <div className="flex items-center justify-between pb-3 sm:pb-4 border-b border-white/10 mb-3 sm:mb-4">
+              <div className="flex items-center gap-2 sm:gap-3">
+                <Video className="w-4 h-4 sm:w-5 sm:h-5 text-cyan-400 animate-pulse" />
+                <h3 className="font-barlow-condensed text-base sm:text-lg uppercase tracking-wider text-white">
+                  Space Flight Video & Hyperspace Warp Simulation
                 </h3>
               </div>
               <button
                 onClick={() => setShowVideoSimModal(false)}
-                className="p-1.5 rounded-lg bg-white/5 hover:bg-white/15 text-slate-400 hover:text-white transition-colors cursor-pointer"
+                className="p-1.5 rounded-lg bg-white/5 hover:bg-white/15 text-slate-400 hover:text-white transition-colors cursor-pointer min-w-[36px] min-h-[36px] flex items-center justify-center"
                 aria-label="Close Simulation"
               >
                 <X className="w-5 h-5" />
